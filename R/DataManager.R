@@ -1,12 +1,14 @@
 DataManager = setRefClass(
   'DataManager', contains='Module', 
-  fields = list (wurst = 'character'), 
+  fields = list (), 
   methods = list(
     initialize = function(...){
       callSuper(...)
-      wurst <<- "hello"
     },
-    getWurst = function(...){
-      wurst
+    
+    #' Show Data Manager GUI
+    showGUI = function(hub) {
+      callSuper(hub)
+      cat("\n Data manger GUI")
     }
   ))

@@ -1,28 +1,38 @@
 Hub = setRefClass(
-  'Hub', 
+  'Hub', contains='Module', 
   fields = list(
-    dataManagerClass = "character", reportBuilderClass = "character", interfaceClasses = "list", dirs = "list"
+    dataManager = 'DataManager', 
+    reportBuilder = 'ReportBuilder', 
+    interfaceClasses = "list", 
+    activeModule = 'Module'
   ), 
   methods = list(
     initialize = function(...) {
-      dataManagerClass <<- "DataManager"
-      reportBuilderClass <<- "ReportBuilder"
-      interfaceClasses <<- list()
-      dirs <<- list (
-        projects = "projects", # data directories
-        libs = "libraries", # compound libraries
-        settings = "settings", # settings
-        reports = "reports" # reports directories
-      )
       callSuper(...)
+      standalone <<- TRUE
     },
-    launchDataManager = function() launchModule(dataManagerClass),
-    launchReportBuilder = function() launchModule(reportBuilderClass),
-    launchModule = function(class) {
-      mod <- new(class, hub = .self)
-      mod$speak()
-      mod
+    
+    #' Setting a directory propagates to all other modules this hub coordinates.
+    #' @seealso \code{Module}
+    setDir = function(key, dir) {
+      callSuper(key, dir)
+      
     },
+    
+    launchDataManager = function () activateModule(dataManager),
+    launchReportBuilder = function() activateModule(reportBuilder),
+    activateModule = function(module) {
+      activeModule$hideGUI()
+      activeModule <<- module
+      module$showGUI(.self)
+    },
+    #launchDataManager = function() launchModule(dataManagerClass),
+    #launchReportBuilder = function() launchModule(reportBuilderClass),
+    #launchModule = function(class) {
+    #  mod <- new(class, hub = .self)
+    #  mod$speak()
+    #  mod
+    #},
     getPath = function(to) dirs[[to]]
   )
 )
@@ -30,4 +40,10 @@ Hub = setRefClass(
 #str(Hub$new()$launchDataManager()$speak())
 #str(Hub$new()$launchReportBuilder()$speak())
 
-Hub$new()$launchDataManager()$hub$launchReportBuilder()
+hub<-Hub$new()
+#print(hub$launchDataManager()$getWurst())
+#hub$launchReportBuilder()
+#hub$launchDataManager()
+hub$setHome("/Users/SKOPF/")
+print(hub$dirs$home)
+print(hub$dataManager$dirs$home)

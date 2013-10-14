@@ -1,12 +1,14 @@
 ReportBuilder = setRefClass(
   'ReportBuilder', contains='Module', 
-  fields = list(hans = 'character'), 
+  fields = list(), 
   methods = list(
     initialize = function(...){
       callSuper(...)
-      hans <<- "hello"
     },
-    getHans = function(...){
-      hans
+    
+    #' Show ReportBuilder GUI
+    showGUI = function(hub) {
+      callSuper(hub)
+      cat("\n Report Builder GUI")
     }
   ))
