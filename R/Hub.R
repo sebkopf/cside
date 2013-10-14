@@ -3,47 +3,46 @@ Hub = setRefClass(
   fields = list(
     dataManager = 'DataManager', 
     reportBuilder = 'ReportBuilder', 
-    interfaceClasses = "list", 
+    dataModules= 'list', 
     activeModule = 'Module'
   ), 
   methods = list(
-    initialize = function(...) {
-      callSuper(...)
-      standalone <<- TRUE
+    initialize = function(dataManager = DataManager$new(), reportBuilder = ReportBuilder$new(), dataModules = list()) {
+      callSuper(standalone = TRUE)
+      
+      # objects
+      dataManager <<- dataManager
+      reportBuilder <<- reportBuilder
+      dataModules <<- dataModules
+      
+      # settings
+      settings$windowSize <<- c(400, 400)
+      settings$windowTitle <<- "CSIDE"
+      
+      # gui
+      guiFunc <<- guiHub
     },
     
     #' Setting a directory propagates to all other modules this hub coordinates.
     #' @seealso \code{Module}
     setDir = function(key, dir) {
+      # update directory as well for all modules
+      lapply(c(dataManager, reportBuilder, dataModules), FUN=function(module) module$setDir(key, dir))
       callSuper(key, dir)
-      
     },
     
-    launchDataManager = function () activateModule(dataManager),
-    launchReportBuilder = function() activateModule(reportBuilder),
-    activateModule = function(module) {
-      activeModule$hideGUI()
-      activeModule <<- module
-      module$showGUI(.self)
-    },
-    #launchDataManager = function() launchModule(dataManagerClass),
-    #launchReportBuilder = function() launchModule(reportBuilderClass),
-    #launchModule = function(class) {
-    #  mod <- new(class, hub = .self)
-    #  mod$speak()
-    #  mod
-    #},
-    getPath = function(to) dirs[[to]]
+    #' Launch all the different modules
+    launchHub = function() {activeModule$hideGUI(); showGUI(.self)},
+    launchDataManager = function () launchModule(dataManager),
+    launchReportBuilder = function() launchModule(reportBuilder),
+    launchDataModule = function(id) launchModule(dataModules[[id]]),
+    
+    #' Generic module launch function
+    launchModule = function(module) {
+      hideGUI() # hide hub GUI
+      activeModule$hideGUI() # hide any other visible modules
+      activeModule <<- module # assign new module
+      module$showGUI(.self) # show new module
+    }
   )
 )
-
-#str(Hub$new()$launchDataManager()$speak())
-#str(Hub$new()$launchReportBuilder()$speak())
-
-hub<-Hub$new()
-#print(hub$launchDataManager()$getWurst())
-#hub$launchReportBuilder()
-#hub$launchDataManager()
-hub$setHome("/Users/SKOPF/")
-print(hub$dirs$home)
-print(hub$dataManager$dirs$home)

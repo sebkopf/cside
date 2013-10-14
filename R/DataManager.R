@@ -4,11 +4,13 @@ DataManager = setRefClass(
   methods = list(
     initialize = function(...){
       callSuper(...)
-    },
-    
-    #' Show Data Manager GUI
-    showGUI = function(hub) {
-      callSuper(hub)
-      cat("\n Data manger GUI")
+      
+      # settings
+      settings$windowSize <<- c(800, 200)
+      settings$windowTitle <<- "CSIDE - Data Manager"
+      
+      # gui
+      guiFunc <<- guiDataManager
     }
-  ))
+  )
+)
