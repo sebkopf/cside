@@ -1,48 +1,84 @@
 Hub = setRefClass(
-  'Hub', contains='Module', 
+  'Hub', 
+  contains='DataFrame', 
   fields = list(
-    dataManager = 'DataManager', 
-    reportBuilder = 'ReportBuilder', 
-    dataModules= 'list', 
-    activeModule = 'Module'
+    modules = 'list', # list of Module objects
+    activeModule = 'character'
   ), 
+  #lock = list(modules), #FIXME implement this
   methods = list(
-    initialize = function(dataManager = DataManager$new(), reportBuilder = ReportBuilder$new(), dataModules = list()) {
-      callSuper(standalone = TRUE)
+    initialize = function(
+        hubModule = HubModule$new(), 
+        dataManager = DataManager$new(), reportBuilder = ReportBuilder$new(), dataModules = list(), 
+        home = getwd(), ...) {
       
-      # objects
-      dataManager <<- dataManager
-      reportBuilder <<- reportBuilder
-      dataModules <<- dataModules
+      # start hub
+      callSuper(activeModule = 'none', ...)
       
-      # settings
-      settings$windowSize <<- c(400, 400)
-      settings$windowTitle <<- "CSIDE"
+      # modules
+      modules <<- c(
+        list(
+          hub = hubModule,
+          dataManager = dataManager,
+          reportBuilder = reportBuilder), 
+        dataModules)
       
-      # gui
-      guiFunc <<- guiHub
+      # propagate module names to the GUIs
+      
+      
+      # safety checking
+      # FIXME implement checking for modules to be the right data type!
+      
+      # hub level settings
+      setSettings(
+        dirs = list (
+          home = home, # home is the working directory by default
+          projects = "projects", # data directories
+          libs = "libraries", # compound libraries
+          settings = "settings", # settings
+          reports = "reports" # reports directories
+        ))
     },
     
-    #' Setting a directory propagates to all other modules this hub coordinates.
-    #' @seealso \code{Module}
-    setDir = function(key, dir) {
-      # update directory as well for all modules
-      lapply(c(dataManager, reportBuilder, dataModules), FUN=function(module) module$setDir(key, dir))
-      callSuper(key, dir)
+    #' Setting home directory and other directories
+    setHome = function(dir) setDir('home', dir),
+    setDir = function(key, dir) setSettings(dirs = list(key = dir)),
+    
+    #' Get a module (active one by default)
+    getModule = function(name = activeModule) {
+      if (identical(name, "none"))
+        stop(paste("Trying to get module when none is active (yet)."))
+      if (!name %in%names(modules))
+        stop(paste("The module", name, "does not exist!"))
+      return(modules[[name]])
     },
+    
+    # FIXME: maybe implement?
+    #' Get module settings
+    #' Get module data
+    #' Get module widgets
     
     #' Launch all the different modules
-    launchHub = function() {activeModule$hideGUI(); showGUI(.self)},
-    launchDataManager = function () launchModule(dataManager),
-    launchReportBuilder = function() launchModule(reportBuilder),
-    launchDataModule = function(id) launchModule(dataModules[[id]]),
+    launchHub = function() { launchModule('hub') },
+    launchDataManager = function () launchModule('dataManager'),
+    launchReportBuilder = function() launchModule('reportBuilder'),
+    launchDataModule = function(name) launchModule(name),
     
     #' Generic module launch function
-    launchModule = function(module) {
-      hideGUI() # hide hub GUI
-      activeModule$hideGUI() # hide any other visible modules
-      activeModule <<- module # assign new module
-      module$showGUI(.self) # show new module
+    launchModule = function(name) {
+      # hide active module
+      if (!identical(activeModule, 'none'))
+        hideGUI(getModule()$gui, .self) # hide the active module
+      
+      # show new module
+      showGUI(getModule(name)$gui, .self) # show new module
+      activeModule <<- name
+    },
+    
+    #' Send data to a module
+    sendDataToModule = function(id) {
+      print("not implemented yet")
+      print(id)
     }
   )
 )

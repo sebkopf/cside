@@ -3,14 +3,11 @@ DataManager = setRefClass(
   fields = list (), 
   methods = list(
     initialize = function(...){
-      callSuper(...)
+      callSuper(gui = DataManagerGUI(), ...)
       
       # settings
       settings$windowSize <<- c(800, 200)
       settings$windowTitle <<- "CSIDE - Data Manager"
-      
-      # gui
-      guiFunc <<- guiDataManager
     }
   )
 )

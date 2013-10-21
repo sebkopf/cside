@@ -1,3 +1,7 @@
+# S4 class HubGUI
+HubGUI <- setClass("HubGUI", contains="GUI")
+
+
 guiHub <- function(module, hub) {
   # setup toplevel widgets
   wingrp<-ggroup(horizontal=FALSE, expand=TRUE, cont=module$widgets$win, spacing=0)
