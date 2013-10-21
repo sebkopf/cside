@@ -9,16 +9,6 @@ DataFrame <- setRefClass(
   ), 
   methods = list(
     
-    #' Get settings
-    getSettings = function(id) {
-      message("get Settings not implemented yet")
-    },
-    
-    #' Adjust settings - FIXME
-    #addParams = function(...){
-    #   params <<- modifyList(params, list(...))
-    #},
-    
     getSetting = function(id) {
       return (settings[[id]])
     },

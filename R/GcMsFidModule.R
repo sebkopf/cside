@@ -3,7 +3,7 @@ GcMsFidModule = setRefClass(
   'GcMsFidModule', contains='CSDataModule', 
   fields = list(), 
   methods = list(
-    initialize = function(){
-      callSuper();
+    initialize = function(...){
+      callSuper(...);
     }
   ))

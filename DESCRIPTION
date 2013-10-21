@@ -11,16 +11,19 @@ Depends: R (>= 2.14.0), ggplot2, gWidgets, RGtk2
 License: MIT
 Collate:
   'utils.R'
-  'guiUtils.R'
+  'GUI.R'
+  'HubGUI.R'
+  'DataManagerGUI.R'
+  'DataFrame.R'
   'Module.R'
-  'guiDataManager.R'
+  'HubModule.R'
   'DataManager.R'
   'ReportBuilder.R'
-  'guiHub.R'
   'Hub.R'
   'DataModule.R'
   'CSDataModule.R'
   'GcMsFidModule.R'
   'DHModule.R'
   'launch.R'
+  'testing.R'
   

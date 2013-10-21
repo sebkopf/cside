@@ -36,8 +36,13 @@ Module <- setRefClass(
      setWidgets = function(...) {
        # FIXME: allow both ... and list(a=b) to be passed in!
        widgets <<- modifyList(widgets, list(...))
+     },
+     
+     cleanWidgets = function() {
+       widgets <<- list()
      }
       
+     
 #      #' Function to set a directory for the module.
 #      #' @param key which directory to set ("projects", "libs", "settings", "reports")
 #      #' @param dir the directory to set

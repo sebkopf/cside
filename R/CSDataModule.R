@@ -3,7 +3,7 @@ CSDataModule = setRefClass(
   'CSDataModule', contains='DataModule', 
   fields = list(), 
   methods = list(
-    initialize = function(){
-      callSuper();
+    initialize = function(...){
+      callSuper(...);
     }
   ))

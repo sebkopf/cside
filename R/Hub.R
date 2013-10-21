@@ -24,7 +24,10 @@ Hub = setRefClass(
         dataModules)
       
       # propagate module names to the GUIs
-      
+      lapply(names(modules), function(name) {
+        module <- modules[[name]]
+        module$gui@module <- name
+      })
       
       # safety checking
       # FIXME implement checking for modules to be the right data type!
