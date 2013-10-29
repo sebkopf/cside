@@ -4,6 +4,13 @@ GcMsFidModule = setRefClass(
   fields = list(), 
   methods = list(
     initialize = function(...){
-      callSuper(...);
+      callSuper(...)
+      
+      # settings
+      setSettings(
+        windowTitle = "GC-MS FID Module",
+        launchIcon = "gtk-convert",
+        launchName = "GS-MS/FID"
+      )
     }
   ))

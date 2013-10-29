@@ -4,6 +4,14 @@ DHModule = setRefClass(
   fields = list(), 
   methods = list(
     initialize = function(...){
-      callSuper(...);
+      callSuper(...)
+      
+      # settings
+      setSettings(
+        windowSize = c(800, 200),
+        windowTitle = "IDP - Isodata Data Processor",
+        launchIcon = "gtk-page-setup",
+        launchName = "D/H Delta+"
+      )
     }
   ))

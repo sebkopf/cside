@@ -2,6 +2,18 @@ testmeout<-function() {
   print("blablabl!")
 }
 
+showIcons <- function() {
+gw<-gwindow("Icons")
+grp<-ggroup(horizontal=FALSE, con=gw)
+gicons<-ggroup(con=grp)
+icons<-getStockIcons()
+for (i in 1:length(icons)) {
+  if (i%%8==0) gicons<-ggroup(con=grp)
+  glabel(icons[i],con=gicons)
+  gbutton(icons[i], con=gicons)
+}
+}
+
 
 # rewrite for my purposes, from:
 # http://stackoverflow.com/questions/7307987/logging-current-function-name

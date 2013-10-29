@@ -19,7 +19,10 @@ Module <- setRefClass(
        ### default setting for a module
        setSettings(
          windowSize = c(800, 600),
-         windowTitle = "Module"
+         windowTitle = "Module",
+         launchIcon = "gtk-yes",
+         launchName = "Module",
+         launchTooltip = "Start this module"
        )
      },
     

@@ -6,8 +6,13 @@ DataManager = setRefClass(
       callSuper(gui = DataManagerGUI(), ...)
       
       # settings
-      settings$windowSize <<- c(800, 200)
-      settings$windowTitle <<- "CSIDE - Data Manager"
+      setSettings(
+        windowSize = c(800, 200),
+        windowTitle = "CSIDE - Data Manager (DSQDP)",
+        launchIcon = "gtk-select-color",
+        launchName = "DSQDP",
+        launchTooltip = "Start the data manager"
+      )
     }
   )
 )

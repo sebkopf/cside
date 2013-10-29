@@ -9,7 +9,7 @@ cside <- function(
   cat("\nInitializing CSIDE ...\n")
   
   # initialize CSIDE hub
-  hub <- Hub$new(dataManager, reportBuilder, dataModules)
+  hub <- Hub$new(dataManager = dataManager, reportBuilder = reportBuilder, dataModules = dataModules)
   
   # set starting home directory
   hub$setHome(home)
@@ -22,6 +22,8 @@ cside <- function(
 }
 
 #cside()
+
+# FIXME: modal implementation!!
 
 ### FIXME - implement me:
 # This is how I should implement the modal part!
