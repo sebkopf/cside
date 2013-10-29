@@ -8,6 +8,9 @@ cside <- function(
   
   cat("\nInitializing CSIDE ...\n")
   
+  # make sure the right id function (from the widgets package) is always used
+  id <- gWidgets::id
+  
   # initialize CSIDE hub
   hub <- Hub$new(dataManager = dataManager, reportBuilder = reportBuilder, dataModules = dataModules, home = home)
   hub$launchHub()
