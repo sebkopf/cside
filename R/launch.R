@@ -9,15 +9,8 @@ cside <- function(
   cat("\nInitializing CSIDE ...\n")
   
   # initialize CSIDE hub
-  hub <- Hub$new(dataManager = dataManager, reportBuilder = reportBuilder, dataModules = dataModules)
-  
-  # set starting home directory
-  hub$setHome(home)
+  hub <- Hub$new(dataManager = dataManager, reportBuilder = reportBuilder, dataModules = dataModules, home = home)
   hub$launchHub()
-  #hub$launchDataManager()
-  #hub$dataManager$checkActive()
-  
-  message("CSIDE done")
   return(hub)
 }
 

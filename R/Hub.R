@@ -35,7 +35,8 @@ Hub = setRefClass(
       # hub level settings
       setSettings(
         dirs = list (
-          home = home, # home is the working directory by default
+          home = home, # home is the launch directory
+          wd = home, # the active working directory (=home at the beginning)
           projects = "projects", # data directories
           libs = "libraries", # compound libraries
           settings = "settings", # settings
@@ -43,9 +44,11 @@ Hub = setRefClass(
         ))
     },
     
-    #' Setting home directory and other directories
-    setHome = function(dir) setDir('home', dir),
-    setDir = function(key, dir) setSettings(dirs = list(key = dir)),
+    #' Getting and setting home directory and other directories
+    getHome = function() getDir('home'),
+    getWD = function() getDir('wd'),
+    getDir = function(key) getSetting('dirs')[[key]],
+    setWD = function(dir) setSettings(dirs = list('wd' = dir)),
     
     #' Get a module (active one by default)
     getModule = function(name = activeModule) {
