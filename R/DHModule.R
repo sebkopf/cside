@@ -4,7 +4,7 @@ DHModule = setRefClass(
   fields = list(), 
   methods = list(
     initialize = function(...){
-      callSuper(...)
+      callSuper(gui = DHModuleGUI(), ...)
       
       # plotting options
       plotOptions = list(
@@ -36,8 +36,8 @@ DHModule = setRefClass(
       
       # settings
       setSettings(
-        windowSize = c(800, 200),
-        windowTitle = "IDP - Isodata Data Processor",
+        windowSize = c(1280, 750),
+        windowTitle = "IDP - Isodat Data Processor",
         launchIcon = "gtk-page-setup",
         launchName = "D/H Delta+",
         
@@ -46,6 +46,7 @@ DHModule = setRefClass(
         leftPane = 0.5, # position of left pane top vs bottom
         rightPane = 0.6, # position of right pane top vs bottom
         centerPane = 0.25,  # position of center pane left vs right
+        fileDirectory = getwd(), # starting fileDirectory
         
         plotOptions = plotOptions, 
         peakTableColumns = peakTableColumns

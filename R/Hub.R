@@ -60,6 +60,7 @@ Hub = setRefClass(
     },
     
     # FIXME: maybe implement?
+    # PROBABLY NOT! because the GUI should go through getModule to make sure to get its own correct module!
     #' Get module settings
     #' Get module data
     #' Get module widgets

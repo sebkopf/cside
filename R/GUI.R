@@ -230,6 +230,8 @@ setMethod("getSetting", "GUI", function(gui, hub, id) {
   return(getModule(gui, hub)$getSetting(id))
 })
 
+#FIXME: implement setSettings!
+
 ###################################
 # Getting and Setting key widgets #
 ###################################

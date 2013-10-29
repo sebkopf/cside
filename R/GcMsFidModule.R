@@ -10,7 +10,7 @@ GcMsFidModule = setRefClass(
       setSettings(
         windowTitle = "GC-MS FID Module",
         launchIcon = "gtk-convert",
-        launchName = "GS-MS/FID"
+        launchName = "GC-MS/FID"
       )
     }
   ))
