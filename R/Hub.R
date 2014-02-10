@@ -1,27 +1,19 @@
+#' A hub is a DataElement that has multiple modules associated with it that it can launch.
+#' It's the main object passed to all the GUIs but in the GUIs then always returns the appriate module that belongs to the guy
+#' while retaining the ability to launch other modules from anywhere in the GUI.
+#' 
 Hub = setRefClass(
   'Hub', 
-  contains='DataFrame', 
+  contains='DataElement', 
   fields = list(
     modules = 'list', # list of Module objects
     activeModule = 'character'
   ), 
   #lock = list(modules), #FIXME implement this
   methods = list(
-    initialize = function(
-        hubModule = HubModule$new(), 
-        dataManager = DataManager$new(), reportBuilder = ReportBuilder$new(), dataModules = list(), 
-        home = getwd(), ...) {
-      
+    initialize = function(...) {
       # start hub
       callSuper(activeModule = 'none', ...)
-      
-      # modules
-      modules <<- c(
-        list(
-          hub = hubModule,
-          dataManager = dataManager,
-          reportBuilder = reportBuilder), 
-        dataModules)
       
       # propagate module names to the GUIs
       lapply(names(modules), function(name) {
@@ -31,24 +23,7 @@ Hub = setRefClass(
       
       # safety checking
       # FIXME implement checking for modules to be the right data type!
-      
-      # hub level settings
-      setSettings(
-        dirs = list (
-          home = home, # home is the launch directory
-          wd = home, # the active working directory (=home at the beginning)
-          projects = "projects", # data directories
-          libs = "libraries", # compound libraries
-          settings = "settings", # settings
-          reports = "reports" # reports directories
-        ))
     },
-    
-    #' Getting and setting home directory and other directories
-    getHome = function() getDir('home'),
-    getWD = function() getDir('wd'),
-    getDir = function(key) getSetting('dirs')[[key]],
-    setWD = function(dir) setSettings(dirs = list('wd' = dir)),
     
     #' Get a module (active one by default)
     getModule = function(name = activeModule) {
@@ -58,19 +33,7 @@ Hub = setRefClass(
         stop(paste("The module", name, "does not exist!"))
       return(modules[[name]])
     },
-    
-    # FIXME: maybe implement?
-    # PROBABLY NOT! because the GUI should go through getModule to make sure to get its own correct module!
-    #' Get module settings
-    #' Get module data
-    #' Get module widgets
-    
-    #' Launch all the different modules
-    launchHub = function() { launchModule('hub') },
-    launchDataManager = function () launchModule('dataManager'),
-    launchReportBuilder = function() launchModule('reportBuilder'),
-    launchDataModule = function(name) launchModule(name),
-    
+ 
     #' Generic module launch function
     launchModule = function(name) {
       # hide active module
