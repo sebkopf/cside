@@ -1,6 +1,10 @@
+#' @include CsideDataModule.R
+#' @include DHModuleGUI.R
+NULL
+
 # implements D/H isodat data
 DHModule = setRefClass(
-  'DHModule', contains='CSDataModule', 
+  'DHModule', contains='CsideDataModule', 
   fields = list(), 
   methods = list(
     initialize = function(...){
@@ -12,7 +16,7 @@ DHModule = setRefClass(
         xUnits = list(value = 1, ids = c("XaxisSec", "XaxisMin"), labels = c("s", "min"), funcs = c(function(x) x, function(x) x/60), revFuncs = c(function(x) x, function(x) x*60)),
         yUnits = list(value = 1, ids = c("YaxismV", "YaxisV"), labels = c("mV", "V"), funcs = c(function(x) x, function(x) x/1000)), # y units not currently implemented
         trace2 = list(on = TRUE, color="black", offset=200), #offset in mV
-        trace3 = list(on = TRUE, color="dark green", offset=0),
+        trace3 = list(on = TRUE, color="dark green", offset=0), 
         markRefs = TRUE, # whether standards should be marked
         baseMarker = list(on = TRUE, color="red"),
         apexMarker = list(on = TRUE, color="red"),

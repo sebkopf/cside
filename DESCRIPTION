@@ -6,36 +6,34 @@ Title: Compound Specific Isotope Data Explorer
 Authors@R: c(person("Sebastian", "Kopf", role = c("aut", "cre"), email = "seb.kopf@gmail.com"))
 Author: Sebastian Kopf
 Maintainer: Sebastian Kopf <seb.kopf@gmail.com>
-Description: Provides GTK+ based user interface for aggregating compound specific isotope data and compiling reports from these data.
-Depends: R (>= 2.14.0), ggplot2, plyr, psych, xlsx, reshape2, gridExtra, scales, stringr, gWidgets, RGtk2
+Description: Provides GTK+ based user interface for aggregating compound
+    specific isotope data and compiling reports from these data.
+Depends:
+    R (>= 2.14.0),
+    ggplot2,
+    plyr,
+    psych,
+    xlsx,
+    reshape2,
+    gridExtra,
+    scales,
+    stringr,
+    gWidgets,
+    RGtk2
 License: MIT
 Collate:
-  'utils.R'
-  'GUI.R'
-  'HubGUI.R'
-  'DataManagerGUI.R'
-  'DHModuleGUI.R'
-  'DataFrame.R'
-  'Module.R'
-  'HubModule.R'
-  'DataManager.R'
-  'ReportBuilder.R'
-  'Hub.R'
-  'DataModule.R'
-  'CSDataModule.R'
-  'GcMsFidModule.R'
-  'DHModule.R'
-  'launch.R'
-  'testing.R'
-  'DHModuleGUI.plots.R'
-  'DHModuleGUI.table.R'
-  'DHModuleLogic.calcs.R'
-  'DHModuleLogic.export.R'
-  'DHModuleLogic.read.R'
-  'IDP.gui.R'
-  'deprecated.IDP.main.R'
-  'SKDATALIB.R'
-  'SKGUILIB.R'
-  'SKPLOTLIB.R'
-  'SKUTILLIB.R'
-  
+    'utils.R'
+    'BaseGui.R'
+    'DataElement.R'
+    'GuiElement.R'
+    'GuiModule.R'
+    'CsideDataManager.R'
+    'CsideDataModule.R'
+    'DHModuleGUI.R'
+    'CsideDataModuleGcIrmsDH.R'
+    'CsideDataModuleGcMsFid.R'
+    'Hub.R'
+    'CsideHub.R'
+    'CsideReportBuilder.R'
+    'CsideStartModule.R'
+    'launch.R'

@@ -1,10 +1,11 @@
+#' @include GuiElement.R
+#' @include BaseGui.R
+NULL
+
 #' A module is a GuiElement that has a whole user interface associated with it.
 #' 
-#' \code{Module$new()} initiates the module.
-#' 
-#' @method launch shows the user interface linked to this module
-Module <- setRefClass(
-  'Module',
+GuiModule <- setRefClass(
+  'GuiModule',
   contains = 'GuiElement',
   fields = list(
     gui = 'BaseGui' # an S4 gui class

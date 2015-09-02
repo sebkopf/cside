@@ -1,11 +1,15 @@
-# S4 class DHModuleGUI
-DHModuleGUI <- setClass("DHModuleGUI", contains="GUI")
+#' @note This is just the bare bones GUI for the isodat data processor
+#' @note todo: migrate the whole github.com/sebkopf/idp implementation
+#' over this way to CSIDE
 
-setMethod("makeMainGUI", "DHModuleGUI", function(gui, hub) {
+# S4 class DHModuleGUI
+DHModuleGUI <- setClass("DHModuleGUI", contains="BaseGui")
+
+setMethod("makeMainGui", "DHModuleGUI", function(gui, module) {
   # top level groups
-  navgrp<-ggroup(horizontal=FALSE, cont=getWinGroup(gui, hub), spacing=0) # navigation group
-  setMenuGroup(gui, hub, navgrp)
-  setToolbarGroup(gui, hub, navgrp)
+  navgrp<-ggroup(horizontal=FALSE, cont=getWinGroup(gui, module), spacing=0) # navigation group
+  setMenuGroup(gui, module, navgrp)
+  setToolbarGroup(gui, module, navgrp)
   
   # left top
   glt<-ggroup(horizontal=FALSE, expand=TRUE) # left column file browser group
@@ -18,21 +22,21 @@ setMethod("makeMainGUI", "DHModuleGUI", function(gui, hub) {
   plot.grp<-ggroup(horizontal=FALSE, expand=TRUE, container=grt) # plot grp in right top
   # right bottom
   grb<-ggroup(horizontal=TRUE, expand=TRUE) # right bottom
-  setWidgets(gui, hub, tableGrp = ggroup(horizontal=FALSE, expand=TRUE, container=grb)) # table grp in bottom right
-  setWidgets(gui, hub, leftGrp = gpanedgroup(glt, glb, horizontal=FALSE, expand=TRUE)) # left column
-  setWidgets(gui, hub, rightGrp = gpanedgroup(grt, grb, horizontal=FALSE, expand=TRUE)) # right column
-  setWidgets(gui, hub, mainGrp = gpanedgroup(getWidget(gui, hub, "leftGrp"), getWidget(gui, hub, "rightGrp"), horizontal=TRUE, container=getWinGroup(gui, hub), expand=TRUE)) # total window group
+  setWidgets(gui, module, tableGrp = ggroup(horizontal=FALSE, expand=TRUE, container=grb)) # table grp in bottom right
+  setWidgets(gui, module, leftGrp = gpanedgroup(glt, glb, horizontal=FALSE, expand=TRUE)) # left column
+  setWidgets(gui, module, rightGrp = gpanedgroup(grt, grb, horizontal=FALSE, expand=TRUE)) # right column
+  setWidgets(gui, module, mainGrp = gpanedgroup(getWidgets(gui, module, "leftGrp"), getWidgets(gui, module, "rightGrp"), horizontal=TRUE, container=getWinGroup(gui, module), expand=TRUE)) # total window group
   
   ### files browser
-  setWidgets(gui, hub, 
-             fileBrowserParentGrp = getWidget(gui, hub, 'leftGrp'),
+  setWidgets(gui, module, 
+             fileBrowserParentGrp = getWidgets(gui, module, 'leftGrp'),
              fileBrowserGrp = NULL)
   
 #   # all the items of the file browser
 #   fileBrowser.items <- function(path = NULL, user.data=NULL) {
 #     topleveldir <- is.null(path)
 #     if (topleveldir) 
-#       path <- tag(getWindow(gui, hub), "settings")$fileDirectory # start with file directory from the settings
+#       path <- tag(getWindow(gui, module), "settings")$fileDirectory # start with file directory from the settings
 #     files <- file.info(dir(path=path, full.names=TRUE))[,c(1,2,3)] # get all files and folders
 #     files <- data.frame(Name=dir(path=path), Dir=files[,2], stringsAsFactors=FALSE)
 #     files <- files[union(which(files$Dir), grep("\\.cf$", files$Name)),] # only folders and .cf files
@@ -53,11 +57,11 @@ setMethod("makeMainGUI", "DHModuleGUI", function(gui, hub) {
 #   
 #   # function to remake the file tree when switching folders (FIXME: somehow looses ability for tree expansion...maybe something about how the tree is added?)
 #   fileBrowser.gui<-function() {
-#     if (!is.null(getWidget(gui, hub, "fileBrowserGrp")))
-#       delete(getWidget(gui, hub, "fileBrowserParentGrp"), getWidget(gui, hub, "fileBrowserGrp"))
-#     getWidget(gui, hub, "fileBrowserGrp") <- ggroup(expand=TRUE)
-#     add(getWidget(gui, hub, "fileBrowserParentGrp"), getWidget(gui, hub, "fileBrowserGrp"), expand=TRUE)
-#     tree<-gtree(fileBrowser.items, fileBrowser.hasOffspring, icon.FUN = fileBrowser.icons, container=getWidget(gui, hub, "fileBrowserGrp"), expand=TRUE, handler=function(h,...) {
+#     if (!is.null(getWidgets(gui, module, "fileBrowserGrp")))
+#       delete(getWidgets(gui, module, "fileBrowserParentGrp"), getWidgets(gui, module, "fileBrowserGrp"))
+#     getWidgets(gui, module, "fileBrowserGrp") <- ggroup(expand=TRUE)
+#     add(getWidgets(gui, module, "fileBrowserParentGrp"), getWidgets(gui, module, "fileBrowserGrp"), expand=TRUE)
+#     tree<-gtree(fileBrowser.items, fileBrowser.hasOffspring, icon.FUN = fileBrowser.icons, container=getWidgets(gui, module, "fileBrowserGrp"), expand=TRUE, handler=function(h,...) {
 #       if (is.null(subpath <- svalue(h$obj[]))) { 
 #         path <- IDP.getSettings(idp, "fileDirectory")
 #         file <- svalue(h$obj)
@@ -97,48 +101,49 @@ setMethod("makeMainGUI", "DHModuleGUI", function(gui, hub) {
   fileInfo.layout[5, 2] <- (fileInfo$H3factor <- glabel("", cont=fileInfo.layout))
   
   # store widgets
-  setWidgets(gui, hub, 
+  setWidgets(gui, module, 
              fileInfo = fileInfo, 
              fileInfo.nb = fileInfo.nb,
              info.graph = ggraphics(container=fileInfo.nb, label="Refs", expand=TRUE)) # file graph
   
   ### plot grp
-  setWidgets(gui, hub, pn = pn.GUI(plot.grp, getWindow(gui, hub), enablePlotLabel=FALSE, enableMenuButtons=FALSE, startWithTab=FALSE,
-                       plotObjLoadHandler=function(obj) IDP.loadIsodatFileTab(idp, obj$plotinfo),
-                       plotEventHandlers=list(
-                         Changed = function(h,...) IDP.plotClickHandler(idp, h),
-                         Doubleclick = function(h,...) IDP.plotDoubleClickHandler(idp, h),
-                         Rightclick = function(h,...) IDP.plotRightClickHandler(idp, h))))
+  #FIXME
+#   setWidgets(gui, module, pn = pn.GUI(plot.grp, getWindow(gui, module), enablePlotLabel=FALSE, enableMenuButtons=FALSE, startWithTab=FALSE,
+#                        plotObjLoadHandler=function(obj) IDP.loadIsodatFileTab(idp, obj$plotinfo),
+#                        plotEventHandlers=list(
+#                          Changed = function(h,...) IDP.plotClickHandler(idp, h),
+#                          Doubleclick = function(h,...) IDP.plotDoubleClickHandler(idp, h),
+#                          Rightclick = function(h,...) IDP.plotRightClickHandler(idp, h))))
   
   ### table grp
-#FIXME  setWidgets(gui, hub, dataTable = gtable(IDP.getEmptyPeakTable(idp), expand=TRUE, cont=getWidget(gui, hub, "tableGrp")))
+#FIXME  setWidgets(gui, module, dataTable = gtable(IDP.getEmptyPeakTable(idp), expand=TRUE, cont=getWidgets(gui, module, "tableGrp")))
   
 #  ### initialize file browser (this late so it has access to the different objects created later)
 #  fileBrowser.gui()
   
 #   ### make window visible after it's completely initialized
-#   optionsSwitch(modeacts, modeact_IDs, list(name=getSetting(gui, hub, "mode")) # select right option from the start
-#   optionsSwitch(xaxisActs, xaxisSignals, list(name=getSetting(gui, hub, "plotOptions")$plotOptions$xUnits$ids[[getSetting(gui, hub, "plotOptions")$xUnits$value]])) # select right xaxis from the start
+#   optionsSwitch(modeacts, modeact_IDs, list(name=getSettings(gui, module, "mode")) # select right option from the start
+#   optionsSwitch(xaxisActs, xaxisSignals, list(name=getSettings(gui, module, "plotOptions")$plotOptions$xUnits$ids[[getSettings(gui, module, "plotOptions")$xUnits$value]])) # select right xaxis from the start
 #   
-#   visHandler <- addHandlerFocus(getWindow(gui, hub), handler=function(...) {
+#   visHandler <- addHandlerFocus(getWindow(gui, module), handler=function(...) {
 #     ### starting plot and notebook positions
-#     visible(getWidget(gui, hub, 'info.graph')) <- TRUE
+#     visible(getWidgets(gui, module, 'info.graph')) <- TRUE
 #     plot.new()
 #     text(0, 0, " ")
 #     svalue(idp$gui$fileInfo.nb) <- 1
 #     addHandlerChanged(idp$gui$fileInfo.nb, handler=function(h,...) if (h$pageno ==2) IDP.plotRefs(idp))
 #     
 #     ### divider positions
-#     svalue(getWidget(gui, hub, "leftGrp")) <- getSetting(gui, hub, "leftPane")
-#     svalue(getWidget(gui, hub, "rightGrp")) <- getSetting(gui, hub, "rightPane")
-#     svalue(getWidget(gui, hub, "mainGrp")) <- getSetting(gui, hub, "centerPane")
+#     svalue(getWidgets(gui, module, "leftGrp")) <- getSettings(gui, module, "leftPane")
+#     svalue(getWidgets(gui, module, "rightGrp")) <- getSettings(gui, module, "rightPane")
+#     svalue(getWidgets(gui, module, "mainGrp")) <- getSettings(gui, module, "centerPane")
 #     
 #     # block Handler (only want it to fire once)  
-#     blockHandler(getWindow(gui, hub), ID=visHandler)
+#     blockHandler(getWindow(gui, module), ID=visHandler)
 #   })
 })
 
-setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
+setMethod("setNavigationActions", "DHModuleGUI", function(gui, module, actionGrp) {
   nav.actions <-
     list(## name, icon, label , accelerator , tooltip , callback
       list ("IDP" , NULL , "_IDP" , NULL , NULL , NULL ) ,
@@ -147,17 +152,17 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
         IDP.save(idp)
         IDP.showInfo(idp, "Isodat File Processor settings and data succesfully saved to workspace.", timer=2, okButton=FALSE)
       } ) , 
-      list ("Quit", "gtk-quit", "Quit", NULL, "Quit program", function(...) { if (gconfirm("Are you sure you want to quit?")) destroyGUI(gui, hub) } ),
+      list ("Quit", "gtk-quit", "Quit", NULL, "Quit program", function(...) { if (gconfirm("Are you sure you want to quit?")) destroyGui(gui, module) } ),
       list ("File" , NULL , "_File" , NULL , NULL , NULL ) , 
       list ("OpenFile" , "gtk-open" , "Open File" , "<ctrl>O" ,"Open isodat file" , function(...) message("sorry, file selection dialog not implemented yet") ) , 
-      list ("CloseFile" , "gtk-close" , "Close File" , "<ctrl>W" ,"Close isodat file" , getWidget(gui, hub, "pn")$actions$aClosePlot$handler ) , 
+      list ("CloseFile" , "gtk-close" , "Close File" , "<ctrl>W" ,"Close isodat file" , getWidgets(gui, module, "pn")$actions$aClosePlot$handler ) , 
       list ("CloseAll" , "gtk-stop" , "Close all Files" , "<ctrl><shift>W" ,"Close all isodat files" , function(...) gmessage("sorry, not implemented yet") ) ,
       list ("ExportExcel" , "gtk-save-as" , "Export to Excel" , "<ctrl>X" , "Export raw data and peak table to excel" , function(...) idp.exportFileToExcel(idp) ) , 
       list ("ExportAll" , "gtk-harddisk" , "Export all to Excel" , "<ctrl><shift>X" , "Export peak table for all files" , function(...) idp.exportAllPeakTablesToExcel(idp, saveAll=TRUE) ) , 
       list ("Plot" , NULL , "_Chrom" , NULL , NULL , NULL ) , 
-      list ("SavePlot", "gtk-save-as", "Save as PDF", "<ctrl>S", "Save chromatogram as PDF", getWidget(gui, hub, "pn")$actions$aSavePlot$handler ),
-      list ("SaveAll", "gtk-harddisk", "Save all", "<ctrl><shift>S", "Save all chromatograms as PDFs", getWidget(gui, hub, "pn")$actions$aSaveAll$handler ),
-      list ("PrintPlot", "gtk-print", "Print", NULL, "Print chromatogram", getWidget(gui, hub, "pn")$actions$aPrintPlot$handler ),
+      list ("SavePlot", "gtk-save-as", "Save as PDF", "<ctrl>S", "Save chromatogram as PDF", getWidgets(gui, module, "pn")$actions$aSavePlot$handler ),
+      list ("SaveAll", "gtk-harddisk", "Save all", "<ctrl><shift>S", "Save all chromatograms as PDFs", getWidgets(gui, module, "pn")$actions$aSaveAll$handler ),
+      list ("PrintPlot", "gtk-print", "Print", NULL, "Print chromatogram", getWidgets(gui, module, "pn")$actions$aPrintPlot$handler ),
       list ("Help" , "gtk-info" ,"Help" , NULL , NULL , function(...) gmessage("sorry, not implemented yet") ) ,
       list ("View" , NULL , "_View" , NULL , NULL , NULL ) ,
       list ("ZoomFull", "gtk-zoom-fit", "Unzoom", NULL, "Unzoom", function(h,...) IDP.zoomReset(idp) ),
@@ -175,13 +180,13 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
       list ("EditSettings" , "gtk-preferences" , "_Edit Settings" , NULL , NULL , function(...) {} ) , 
       list ("TableColumns", "gtk-properties", "_Table Columns", NULL, "Select which peak table columns are displayed", function(...) {
         dlg <- gbasicdialog(title="Select visible columns for the peak table", handler = function(h,...) {
-          tag(getWindow(gui, hub), "settings")$peakTableColumns <- tbl[] # save updated peak table column settings
-          delete(getWidget(gui, hub, "tableGrp"), getWidget(gui, hub, "dataTable")) # delete previous table
-#FIXME          setWidgets(gui, hub, dataTable = gtable(IDP.getEmptyPeakTable(idp), expand=TRUE, cont=getWindow(gui, hub, "tableGrp"))) # remake current table
-          IDP.loadPeakTable(idp, pn.getAllInfo(getWidget(gui, hub, "pn"))$peakTable)
+          tag(getWindow(gui, module), "settings")$peakTableColumns <- tbl[] # save updated peak table column settings
+          delete(getWidgets(gui, module, "tableGrp"), getWidgets(gui, module, "dataTable")) # delete previous table
+#FIXME          setWidgets(gui, module, dataTable = gtable(IDP.getEmptyPeakTable(idp), expand=TRUE, cont=getWindow(gui, module, "tableGrp"))) # remake current table
+          IDP.loadPeakTable(idp, pn.getAllInfo(getWidgets(gui, module, "pn"))$peakTable)
         })
         size(dlg)<-c(500,500)
-        tbl <- table.toggleTable(ggroup(cont=dlg, expand=TRUE), tag(getWindow(gui, hub), "settings")$peakTableColumns, "Show", invisibleColumns=c("Name", "Required", "IsodatCol"))
+        tbl <- table.toggleTable(ggroup(cont=dlg, expand=TRUE), tag(getWindow(gui, module), "settings")$peakTableColumns, "Show", invisibleColumns=c("Name", "Required", "IsodatCol"))
         visible(dlg, set=TRUE) ## show dialog
       }),
       list ("DeletePeak" , "gtk-cancel" , "Delete Peak", "<ctrl>D", "Delete selected peak (<ctrl>D)" , function(...) {gmessage("sorry, not implemented yet")}),
@@ -197,9 +202,9 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
   fullscreen_act<-gtkToggleAction("FullScreen", "Full Screen", "Make application full screen", stock.id="gtk-fullscreen")
   gSignalConnect (fullscreen_act , "toggled" , function ( action ) {
     if(fullscreen_act ['active'] )
-      getToolkitWidget(getWindow(gui, hub))$fullscreen ( )
+      getToolkitWidget(getWindow(gui, module))$fullscreen ( )
     else
-      getToolkitWidget(getWindow(gui, hub))$unfullscreen ( )
+      getToolkitWidget(getWindow(gui, module))$unfullscreen ( )
   } )
   actionGrp$addActionWithAccel(fullscreen_act, "<control>F")
   
@@ -222,7 +227,7 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
   for (name in names(xaxisActs)) {
     xaxisSignals[[name]] <- gSignalConnect (xaxisActs[[name]] , "toggled", function(action) {
       opt <- optionsSwitch(xaxisActs, xaxisSignals, action)
-#FIXME      setSetting(tag(getWindow(gui, hub), "settings")$plotOptions$xUnits$value <- which(idp$settings$plotOptions$xUnits$ids == opt)
+#FIXME      setSetting(tag(getWindow(gui, module), "settings")$plotOptions$xUnits$value <- which(idp$settings$plotOptions$xUnits$ids == opt)
 #FIXME      IDP.plot(idp) # replot
     })
     actionGrp$addAction(xaxisActs[[name]])
@@ -230,21 +235,21 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
   
   # plot options
   MarkRefsAct = gtkToggleAction("MarkRefs", "Mark Reference Peaks", "Mark reference peaks with *")
-  MarkRefsAct['active']<-getSetting(gui, hub, "plotOptions")$markRefs
+  MarkRefsAct['active']<-getSettings(gui, module, "plotOptions")$markRefs
   gSignalConnect (MarkRefsAct, "toggled" , function ( action ) {
-    #tag(getWindow(gui, hub), "settings")$plotOptions$markRefs <- MarkRefsAct['active']
+    #tag(getWindow(gui, module), "settings")$plotOptions$markRefs <- MarkRefsAct['active']
 #FIXME    IDP.setSettings(idp, list("plotOptions.markRefs" = MarkRefsAct['active']))
 #FIXME    IDP.plot(idp) # replot
   } )
   actionGrp$addAction(MarkRefsAct)
   
   # best fit (toggle)
-  setWidgets(gui, hub, bestfitActive = gtkToggleAction("BestFit", "Best Fit", "Fit to tallest peak", stock.id="gtk-zoom-100"))
-  gSignalConnect (getWidget(gui, hub, "bestfitActive") , "toggled" , function ( action ) {
-    if (getWidget(gui, hub, "bestfitActive")['active'])
+  setWidgets(gui, module, bestfitActive = gtkToggleAction("BestFit", "Best Fit", "Fit to tallest peak", stock.id="gtk-zoom-100"))
+  gSignalConnect (getWidgets(gui, module, "bestfitActive") , "toggled" , function ( action ) {
+    if (getWidgets(gui, module, "bestfitActive")['active'])
       IDP.zoomBest(idp)
   } )
-  actionGrp$addActionWithAccel(getWidget(gui, hub, "bestfitActive"), "<control>B")
+  actionGrp$addActionWithAccel(getWidgets(gui, module, "bestfitActive"), "<control>B")
   
   # switch between modes
   modeacts<-list(
@@ -254,14 +259,14 @@ setMethod("setNavigationActions", "DHModuleGUI", function(gui, hub, actionGrp) {
     ModeRefs = gtkToggleAction("ModeRefs", "Choose Refs", "Choose isotopic reference peaks", stock.id="gtk-about"))
   modeact_IDs<-list()
 #FIXME  for (name in names(modeacts))
-#FIXME    modeact_IDs[[name]] <- gSignalConnect (modeacts[[name]] , "toggled" , function(action) tag(getWindow(gui, hub), "settings")$mode<-optionsSwitch(modeacts, modeact_IDs, action))
+#FIXME    modeact_IDs[[name]] <- gSignalConnect (modeacts[[name]] , "toggled" , function(action) tag(getWindow(gui, module), "settings")$mode<-optionsSwitch(modeacts, modeact_IDs, action))
   actionGrp$addActionWithAccel(modeacts$ModeInfo, "<control>I")
   actionGrp$addActionWithAccel(modeacts$ModeAdd, "<control>A")
   actionGrp$addActionWithAccel(modeacts$ModeEdit, "<control>E")
   actionGrp$addActionWithAccel(modeacts$ModeRefs, NULL) #FIXME (control - C taken by copy peak table)
 })
 
-setMethod("getToolbarXML", "DHModuleGUI", function(gui, hub) {
+setMethod("getToolbarXML", "DHModuleGUI", function(gui, module) {
   nav <- '
     <toolitem action = "ZoomFull"/>
     <toolitem action = "ZoomIn"/>
@@ -283,7 +288,7 @@ setMethod("getToolbarXML", "DHModuleGUI", function(gui, hub) {
   return(nav)
 })
 
-setMethod("getMenuXML", "DHModuleGUI", function(gui, hub) {
+setMethod("getMenuXML", "DHModuleGUI", function(gui, module) {
   return (
     '<menu name = "IDP" action="IDP">
     <menuitem action="SaveToWorkspace" />

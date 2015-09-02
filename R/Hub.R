@@ -1,7 +1,6 @@
-#' A hub is a DataElement that has multiple modules associated with it that it can launch.
-#' It's the main object passed to all the GUIs but in the GUIs then always returns the appriate module that belongs to the guy
-#' while retaining the ability to launch other modules from anywhere in the GUI.
-#' 
+#' @include DataElement.R
+NULL
+
 Hub = setRefClass(
   'Hub', 
   contains='DataElement', 
@@ -11,18 +10,16 @@ Hub = setRefClass(
   ), 
   #lock = list(modules), #FIXME implement this
   methods = list(
-    initialize = function(...) {
+    initialize = function(modules, ...) {
+      
       # start hub
-      callSuper(activeModule = 'none', ...)
+      callSuper(modules = modules, activeModule = 'none', ...)
       
       # propagate module names to the GUIs
       lapply(names(modules), function(name) {
         module <- modules[[name]]
         module$gui@module <- name
       })
-      
-      # safety checking
-      # FIXME implement checking for modules to be the right data type!
     },
     
     #' Get a module (active one by default)
@@ -33,16 +30,23 @@ Hub = setRefClass(
         stop(paste("The module", name, "does not exist!"))
       return(modules[[name]])
     },
- 
+    
     #' Generic module launch function
     launchModule = function(name) {
       # hide active module
       if (!identical(activeModule, 'none'))
-        hideGUI(getModule()$gui, .self) # hide the active module
+        hideGui(getModule()$gui, .self) # hide the active module
       
       # show new module
-      showGUI(getModule(name)$gui, .self) # show new module
+      showGui(getModule(name)$gui, .self) # show new module
       activeModule <<- name
+    },
+    
+    # launches the first module by default
+    launchHub = function() { 
+      if (length(modules) == 0)
+        stop("this hub has no modules registered")
+      launchModule(names(modules)[1]) 
     },
     
     #' Send data to a module

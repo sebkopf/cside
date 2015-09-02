@@ -1,6 +1,8 @@
+#' @include GuiModule.R
+
 #' The start screen of cside
 CsideStartModule = setRefClass(
-  'CsideStartModule', contains='Module', 
+  'CsideStartModule', contains='GuiModule', 
   methods = list(
     initialize = function(...){
       # define GUI class
@@ -39,29 +41,41 @@ setMethod("getToolbarXML", "CsideStartGui", function(gui, module) {
 })
 
 setMethod("setNavigationActions", "CsideStartGui", function(gui, module, actionGrp) {
+  # 'module' is really the hub here
+  hub <- module
+  
   nav.actions <-
     list(## name, icon, label , accelerator , tooltip , callback
       list ("CSIDE" , NULL , "_CSIDE" , NULL , NULL , NULL ) ,
       list ("Help" , "gtk-info" ,"Help" , "<ctrl>H" , NULL , function(...) gmessage("sorry, not implemented yet") ) ,
-      list ("Reload" , "gtk-refresh" ,"Reload Screen" , "<ctrl>R" , NULL , function(...) remakeGUI(gui, module) ) , # FIXME: disable the keyboard shortcut!
-      list ("Quit", "gtk-quit", "Quit", "<ctrl>Q", "Quit program", function(...) destroyGUI(gui, module) ))
+      list ("Reload" , "gtk-refresh" ,"Reload Screen" , "<ctrl>R" , NULL , function(...) remakeGui(gui, module) ) , # FIXME: disable the keyboard shortcut!
+      list ("Quit", "gtk-quit", "Quit", "<ctrl>Q", "Quit program", function(...) destroyGui(gui, module) ))
+  
+  # without this construct, only evaluates the name upon activation
+  launch_module <- function(x) {
+    force(x) 
+    return(function(...) module$launchModule(x))
+  }
   
   # add module launch actions to toolbar
-  for (name in names(module$modules)) {
+  for (name in names(hub$modules)) {
     if (name!='start') {
       nav.actions <- c(nav.actions, list(
         list(paste0("Module", name), # action handle
-             hub$getModule(name)$getSetting("launchIcon"), # icon
-             hub$getModule(name)$getSetting("launchName"), # label
+             hub$getModule(name)$getSettings("launchIcon"), # icon
+             hub$getModule(name)$getSettings("launchName"), # label
              NULL, # short cut
-             hub$getModule(name)$getSetting("launchTooltip"), # tooltip
-             function(...) hub$launchModule(name)))) # launch module
+             hub$getModule(name)$getSettings("launchTooltip"), # tooltip
+             launch_module(name)))) # launch module
     }
   }
   actionGrp$addActions(nav.actions)
 })
 
-setMethod("makeMainGUI", "CsideStartGui", function(gui, module) {
+setMethod("makeMainGui", "CsideStartGui", function(gui, module) {
+  # 'module' is really the hub here
+  hub <- module
+  
   # top level groups
   setMenuGroup(gui, module, ggroup(horizontal=FALSE, cont=getWinGroup(gui, module), spacing=0))
   mainGrp <- ggroup(horizontal=FALSE, cont=getWinGroup(gui, module), spacing=0, expand=TRUE)

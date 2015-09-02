@@ -1,3 +1,5 @@
+#' @include utils.R
+
 # Generic functions that Gui classes can attach to
 
 # convenience for interacting with the module
@@ -16,6 +18,7 @@ setGeneric("makeGui", function(gui, module) standardGeneric("makeGui"))
 setGeneric("destroyGui", function(gui, module) standardGeneric("destroyGui"))
 setGeneric("showGui", function(gui, module) standardGeneric("showGui"))
 setGeneric("hideGui", function(gui, module) standardGeneric("hideGui"))
+setGeneric("remakeGui", function(gui, module, show = TRUE) standardGeneric("remakeGui"))
 
 # specific functions streamlining Gui design but that are not intended to be derived
 setGeneric("getNavigationXML", function(gui, module) standardGeneric("getNavigationXML"))
@@ -35,6 +38,12 @@ setGeneric("makeMainGui", function(gui, module) standardGeneric("makeMainGui"))
 setGeneric("setNavigationActions", function(gui, module, actionGrp) standardGeneric("setNavigationActions"))
 
 # other utility functions for interacting with the Gui
+
+#' show an info message
+#' type - styling of the mssage, info, error, question, warning are the standard ones
+#' timer - time in seconds until message disappears automatically
+#' okButton - whether there is an ok button or not
+#' @method showInfo
 setGeneric("showInfo", function(gui, module, msg, type="question", timer=2, okButton=TRUE) standardGeneric("showInfo"))
 setGeneric("hideInfo", function(gui, module) standardGeneric("hideInfo"))
 
@@ -55,7 +64,7 @@ setMethod("initialize", "BaseGui", function(.Object, ...) {
 ###################
 
 setMethod("makeGui", "BaseGui", function(gui, module) {
-  dmsg("I am a", class(gui), "and have module", gui@module, "and I am making my Gui.\n")
+  dmsg("I am a ", class(gui), " with module ID '", gui@module, "' and I am making my Gui.")
   options("guiToolkit"="RGtk2") # everything is written in RGtk2
   
   # make window
@@ -105,20 +114,27 @@ setMethod("makeGui", "BaseGui", function(gui, module) {
 })
 
 setMethod("destroyGui", "BaseGui", function(gui, module) {
-  dmsg("I am a", class(gui), "and have module", gui@module, "and I am destroying my Gui.\n")
+  dmsg("I am a ", class(gui), " with module ID '", gui@module, "' and I am destroying my Gui.")
   dispose(getWindow(gui, module)) # destroy window
   getModule(gui, module)$destroyGui() # clean all widget references
+})
+
+setMethod("remakeGui", "BaseGui", function(gui, module, show = TRUE) {
+  destroyGui(gui, module)
+  makeGui(gui, module)
+  if (show)
+    showGui(gui, module)
 })
 
 setMethod("showGui", "BaseGui", function(gui, module) {
   if (is.null(getWindow(gui, module)))
     makeGui(gui, module)
-  dmsg("I am a", class(gui), "and have module", gui@module, "and I am showing my Gui now.\n")
+  dmsg("I am a ", class(gui), " with module ID '", gui@module, "' and I am showing my Gui now.")
   visible(getWindow(gui, module), TRUE)
 })
 
 setMethod("hideGui", "BaseGui", function(gui, module) {
-  dmsg("I am a", class(gui), "and have module", gui@module, "and I am hiding my Gui.\n")
+  dmsg("I am a ", class(gui), " with module ID '", gui@module, "' and I am hiding my Gui.")
   if (!is.null(getWindow(gui, module)))
     visible(getWindow(gui, module), FALSE)
 })
@@ -142,13 +158,13 @@ setMethod("getNavigationXML", "BaseGui", function(gui, module) {
 setMethod("makeNavigation", "BaseGui", function(gui, module) {
   
   # navigation actions
-  dmsg("\tInitializing Navigation.\n")
+  dmsg("\tInitializing Navigation.")
   setWidgets(gui, module, actionGroup = gtkActionGroup ("FileGroup"))
-  dmsg("\tSetting Navigation Actions.\n")
+  dmsg("\tSetting Navigation Actions.")
   setNavigationActions(gui, module, getWidgets(gui, module, 'actionGroup'))
   
   # UI manager for navigation
-  dmsg("\tMaking Navigation Manager.\n")
+  dmsg("\tMaking Navigation Manager.")
   uimanager <- gtkUIManagerNew() # ui manager
   uimanager$insertActionGroup (getWidgets(gui, module, 'actionGroup'), 0) # add actions
   uimanager$addUiFromString (getNavigationXML(gui, module)) # add ui 
@@ -156,7 +172,7 @@ setMethod("makeNavigation", "BaseGui", function(gui, module) {
   # menu
   menuGrp <- getWidgets(gui, module, 'menuGroup')
   if (!is.null(menuGrp)) {
-    dmsg("\tMaking Menubar.\n")
+    dmsg("\tMaking Menubar.")
     getToolkitWidget(menuGrp)$packStart (uimanager$getWidget ("/menubar"), FALSE ) # add menu
   }
     
@@ -164,7 +180,7 @@ setMethod("makeNavigation", "BaseGui", function(gui, module) {
   toolbarGrp <- getWidgets(gui, module, 'toolbarGroup')
   if (!is.null(toolbarGrp)) {
     getToolkitWidget(toolbarGrp)$packStart (uimanager$getWidget ( "/toolbar" ), TRUE) # add toolbar
-    dmsg("\tMaking Toolbar.\n")
+    dmsg("\tMaking Toolbar.")
   }
   getToolkitWidget(getWindow(gui, module))$addAccelGroup (uimanager$getAccelGroup()) # add keyboard triggers
   
@@ -185,12 +201,8 @@ setMethod("makeInfoBar", "BaseGui", function(gui, module){
 })
 
 
-#' show an info message
-#' type - styling of the mssage, info, error, question, warning are the standard ones
-#' timer - time in seconds until message disappears automatically
-#' okButton - whether there is an ok button or not
 setMethod("showInfo", "BaseGui", function(gui, module, msg, type="question", timer=2, okButton=TRUE) {
-  dmsg("\tShowing info message for", timer, "seconds.\n")
+  dmsg("\tShowing info message for ", timer, " seconds.")
   getWidgets(gui, module, 'infoBar')$setMessageType(type)
   getWidgets(gui, module, 'infoLabel')$setText(msg)
   getWidgets(gui, module, 'infoBar')$show()
@@ -206,7 +218,7 @@ setMethod("showInfo", "BaseGui", function(gui, module, msg, type="question", tim
 
 # hide info bar
 setMethod("hideInfo", "BaseGui", function(gui, module) {
-  dmsg("\tHiding info message.\n")
+  dmsg("\tHiding info message.")
   getWidgets(gui, module, 'infoBar')$hide()
 })
 

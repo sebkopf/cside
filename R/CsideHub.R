@@ -1,3 +1,6 @@
+#' @include Hub.R
+NULL
+
 #' The hub of the CSIDE program
 #' 
 CsideHub = setRefClass(
@@ -6,17 +9,19 @@ CsideHub = setRefClass(
   methods = list(
     initialize = function(
       startModule = CsideStartModule$new(), 
-      dataManager = DataManager$new(), reportBuilder = ReportBuilder$new(), dataModules = list(), 
+      dataManager = CsideDataManager$new(), 
+      reportBuilder = CsideReportBuilder$new(), 
+      dataModules = list(), # other specific data modules
       home = getwd(), ...) {
       
       # CSIDE hub modules
       callSuper(modules = c(
         list(
-          start = startModule,
+          start = startModule ,
           dataManager = dataManager,
           reportBuilder = reportBuilder), 
         dataModules), ...)
-      
+
       # hub level settings
       setSettings(
         dirs = list (
@@ -32,7 +37,7 @@ CsideHub = setRefClass(
     #' Getting and setting home directory and other directories
     getHome = function() getDir('home'),
     getWD = function() getDir('wd'),
-    getDir = function(key) getSetting('dirs')[[key]],
+    getDir = function(key) getSettings('dirs')[[key]],
     setWD = function(dir) setSettings(dirs = list('wd' = dir)),
   
     #' Launch all the different standard modules of the CSIDE Hub

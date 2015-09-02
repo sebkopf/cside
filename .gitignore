@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Rbuildignore
+
+# transfer files from other projects
+R/to_be_integrated
+
+# skip the manual files for now
+man/
