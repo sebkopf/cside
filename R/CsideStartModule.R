@@ -91,7 +91,8 @@ setMethod("makeMainGui", "CsideStartGui", function(gui, module) {
       path <- file.path(hub$getHome(), do.call("file.path", args=as.list(path)))
     
     hub$setWD(path)
-    showInfo(gui, module, hub$getWD(), timer=NULL, okButton=FALSE)
+    info_line <- paste0(basename(hub$getHome()), sub(hub$getHome(), "", hub$getWD()))
+    showInfo(gui, module, info_line, timer=NULL, okButton=FALSE)
     
     folders <- subset(data.frame(
       Folder=dir(path, include.dirs=TRUE),
@@ -120,7 +121,8 @@ setMethod("makeMainGui", "CsideStartGui", function(gui, module) {
       hub$setWD(val)
     else
       hub$setWD(hub$getHome()) # set back to home directory
-    showInfo(gui, module, hub$getWD(), timer=NULL, okButton=FALSE)
+    info_line <- paste0(basename(hub$getHome()), sub(hub$getHome(), "", hub$getWD()))
+    showInfo(gui, module, info_line, timer=NULL, okButton=FALSE)
   })
 })
 
